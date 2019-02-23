@@ -1,0 +1,14 @@
+flask
+gensim
+glove
+gunicorn
+matplotlib
+nlpk
+numpy
+pandas
+pymongo
+python-docx
+scikit-learn
+seaborn
+spacy
+xlrd

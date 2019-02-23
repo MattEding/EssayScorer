@@ -61,6 +61,6 @@ def get_prompt(readme):
     pred_take = lambda s: 'Rubric' not in s
     prompts = (p.text for p in doc.paragraphs)
     prompts = itertools.dropwhile(pred_drop, prompts)
+    next(prompts)
     prompts = itertools.takewhile(pred_take, prompts)
-    prompts = filter(pred_drop, prompts)
     return '\n'.join(prompts)
