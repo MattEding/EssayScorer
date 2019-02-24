@@ -1,9 +1,8 @@
 flask
 gensim
-glove
 gunicorn
 matplotlib
-nlpk
+nltk
 numpy
 pandas
 pymongo

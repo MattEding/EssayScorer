@@ -2,6 +2,7 @@ import io
 import itertools
 
 import docx
+from scipy.interpolate import interp1d
 
 
 def public(obj):
@@ -64,3 +65,13 @@ def get_prompt(readme):
     next(prompts)
     prompts = itertools.takewhile(pred_take, prompts)
     return '\n'.join(prompts)
+
+
+def interpolate(df, col_min, col_max, new_min=0, new_max=100):
+    maps = []
+    for _, series in df.iterrows():
+        old_interval = series[[col_min, col_max]]
+        new_interval = [new_min, new_max]
+        map_ = interp1d(old_interval, new_interval)
+        maps.append(map_)
+    return maps
