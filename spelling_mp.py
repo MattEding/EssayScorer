@@ -23,38 +23,34 @@ logging.basicConfig(filename=log_file, level=logging.INFO, style='{', format=fmt
 logger = logging.getLogger(__name__)
 
 
+npy = npys / f'{name}_corrections.npy'
+if npy.exists():
+    arr = np.load(npy)
+else:
+    arr = np.empty(len(essays), dtype=object)
 
+
+def correct(i_essay):
+    i, essay = i_essay
+    corr = str(TextBlob(essay).correct())
+    try:
+        arr[i] = corr
+        logger.info(f'Corrected Index: {name} @ {i}')
+    except BaseException as exc:
+        logger.exception(exc)
+        raise
+    finally:
+        np.save(npy, arr)
+        logger.info(f'Saved Corrections: {name} @ {i-1}...(mp)')
 
 
 def correct_range(name, start=0, stop=None):
     pkl = pkls / f'{name}.pkl'
-    npy = npys / f'{name}_corrections.npy'
-
-    
-    if npy.exists():
-        arr = np.load(npy)
-    else:
-        arr = np.empty(len(essays), dtype=object)
 
     logger.info(f'Start Index: {name} @ {start}')
     
     df = pd.read_pickle(pkl)        
     essays = df['essay'][start:stop]
-
-    
-    def correct(i_essay):
-        i, essay = i_essay
-        corr = str(TextBlob(essay).correct())
-        try:
-            arr[i] = corr
-            logger.info(f'Corrected Index: {name} @ {i}')
-        except BaseException as exc:
-            logger.exception(exc)
-            raise
-        finally:
-            np.save(npy, arr)
-            logger.info(f'Saved Corrections: {name} @ {i-1}...(mp)')
-        
 
     with mp.Pool() as pool:
         corrs = pool.map(correct, enumerate(essays, start=start))
