@@ -1,5 +1,6 @@
+import itertools
 import logging
-import multiprocessing as mp
+import multiprocessing
 import pathlib
 
 import numpy as np
@@ -30,7 +31,11 @@ else:
     arr = np.empty(len(essays), dtype=object)
 
 
-def correct(i_essay):
+cycle = itertools.cycle(range(50))
+next(cycle) # don't np.save immediately
+
+
+def correct(i_essay, *, _cycle=cycle):
     i, essay = i_essay
     corr = str(TextBlob(essay).correct())
     try:
@@ -40,8 +45,9 @@ def correct(i_essay):
         logger.exception(exc)
         raise
     finally:
-        np.save(npy, arr)
-        logger.info(f'Saved Corrections: {name} @ {i-1}...(mp)')
+        if not next(_cycle):
+            np.save(npy, arr)
+            logger.info(f'Saved Corrections: {name} @ {i-1}...(mp)')
 
 
 def correct_range(name, start=0, stop=None):
@@ -52,24 +58,8 @@ def correct_range(name, start=0, stop=None):
     df = pd.read_pickle(pkl)        
     essays = df['essay'][start:stop]
 
-    with mp.Pool() as pool:
+    with multiprocessing.Pool() as pool:
         corrs = pool.map(correct, enumerate(essays, start=start))
-
-
-#    corrs = (str(TextBlob(essay).correct()) for essay in essays)
-#    try:
-#        for i, corr in enumerate(corrs, start=start):
-#            arr[i] = corr
-#            logger.info(f'Corrected Index: {name} @ {i}')
-#            if (start + i) % 50 == 0:
-#                np.save(npy, arr)
-#                logger.info(f'Saved Corrections: {name} @ {i}')
-#    except BaseException as exc:
-#        logger.exception(exc)
-#        raise
-#    finally:
-#        np.save(npy, arr)
-#        logger.info(f'Saved Corrections: {name} @ {i-1}')
     
     logger.info(f'Stop Index: {name} @ {stop}')
     
