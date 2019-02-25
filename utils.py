@@ -3,6 +3,7 @@ import itertools
 
 import docx
 from scipy.interpolate import interp1d
+from scipy.spatial.distance import cosine
 
 
 def public(obj):
@@ -75,3 +76,7 @@ def interpolate(df, col_min, col_max, new_min=0, new_max=100):
         map_ = interp1d(old_interval, new_interval)
         maps.append(map_)
     return maps
+
+
+def cosine_similarity(u, v, w=None):
+    return 1 - cosine(u, v, w)
