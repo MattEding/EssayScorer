@@ -8,16 +8,38 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from textblob import TextBlob
+from textblob import TextBlob, WordList
 
 
-PUNCTUATION = string.punctuation
-STOPWORDS = stopwords.words('english')
+# PUNCTUATION = string.punctuation
+# STOPWORDS = stopwords.words('english')
 
 NOUN_MAP = {
     'common': frozenset('EMAIL MONEY NUM PERCENT TIME'.split()),
     'proper': frozenset('CAPS CITY DATE DR LOCATION MONTH PERSON ORGANIZATION STATE'.split()),
 }
+
+
+def clean_stopwords_punctuation(wordlist, punctuation=string.punctuation, stopwords=stopwords.words('english')):
+    """Return cleaned text without stopwords or punctuation.
+    
+    Parameters
+    ----------
+    wordlist : WordList
+        WordList of words to clean.
+    punctuation : container, optional
+        Set of punctuation characters to ignore.
+    stopwords : container, optional
+        Set of strings of words to ignore.
+        
+    Returns
+    -------
+    cleaned : str
+        String of cleaned text joined.
+    """
+    
+    cleaned = WordList(w for w in wordlist if w not in punctuation and w not in stopwords)
+    return ' '.join(cleaned)
 
 
 def blobify(text):
@@ -57,9 +79,9 @@ def prompt_similarity(prompt, essay, metric=cosine_similarity, vectorizer=TfidfV
         Essay prompt.
     essay : str
         Essay written.
-    metric : pairwise metric
+    metric : pairwise metric, optional
         Metric to compare the two documents.
-    vectorizer : class with VectorizerMixin
+    vectorizer : VectorizerMixin, optional
         Vectorizer to fit transform the documents.
         
     Returns
@@ -69,7 +91,7 @@ def prompt_similarity(prompt, essay, metric=cosine_similarity, vectorizer=TfidfV
     """
     
     vec = vectorizer()
-    X = vec.fit_transform([corrected, original])
+    X = vec.fit_transform([essay, prompt])
     measure = np.asscalar(metric(X[0], X[1]))
     return measure
 

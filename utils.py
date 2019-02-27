@@ -1,9 +1,25 @@
 import io
 import itertools
+import logging
+import pathlib
 
 import docx
 from scipy.interpolate import interp1d
 from scipy.spatial.distance import cosine
+
+
+def get_logger(filename, module_name):
+    logs = pathlib.Path.cwd() / 'data' / 'logs'
+
+    log_file = logs / f'{filename}.log'
+    log_file.touch()
+    fmt = '{name} - {asctime} - {levelname} - Message: {message}'
+    logging.basicConfig(filename=log_file, 
+                        level=logging.INFO, 
+                        style='{', 
+                        format=fmt)
+    logger = logging.getLogger(module_name)
+    return logger
 
 
 def public(obj):

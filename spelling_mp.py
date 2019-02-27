@@ -58,8 +58,8 @@ def correct(i_essay):
     
     Returns
     -------
-    corr : str
-        String of corrections. 
+    i_corr : (i, str)
+        Pair of ith string of corrections. 
     """
     
     i, essay = i_essay
