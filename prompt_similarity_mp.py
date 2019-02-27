@@ -9,9 +9,6 @@ import nlp_util
 import utils
 
 
-logger = utils.get_logger(f'{NAME}_prompt', __name__)
-
-
 #: User Input Prompts
 NAME = input('Input data name: ')
 START = int(input('Input start index: '))
@@ -19,7 +16,10 @@ try:
     STOP = int(input('Input stop index: '))
 except Exception:
     STOP = None
+
     
+logger = utils.get_logger(f'{NAME}_prompt', __name__)
+
 
 #: Directory Paths
 data = pathlib.Path.cwd() / 'data'
