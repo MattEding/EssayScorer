@@ -16,7 +16,6 @@ except Exception:
     STOP = None
 
 
-
 #: Directory Paths
 data = pathlib.Path.cwd() / 'data'
 pkls = data / 'pkls'

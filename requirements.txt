@@ -1,14 +1,11 @@
 flask
-gensim
-gunicorn
 matplotlib
 nltk
 numpy
 pandas
-pymongo
 python-docx
 scikit-learn
 seaborn
-spacy
 textblob
+textstat
 xlrd
