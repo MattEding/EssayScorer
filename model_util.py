@@ -99,7 +99,7 @@ def get_hyperparameters(estimator):
     hyper_params = ', '.join(hyper_params)
 
 
-def plot_residuals(regression_estimator, X_test, y_test, *, alpha=0.2, dpi=1000, save_path=None):
+def plot_residuals(regression_estimator, X, y, *, alpha=0.2, dpi=1000, save_path=None):
     """Plot residuals with option to save to disk.
 
     Parameters
@@ -107,8 +107,9 @@ def plot_residuals(regression_estimator, X_test, y_test, *, alpha=0.2, dpi=1000,
     # TODO:
     """
 
-    predictions = regression_estimator.predict(X_test)
-    residuals = y_test - predictions
+    regression_estimator.fit(X, y)
+    predictions = regression_estimator.predict(X)
+    residuals = y - predictions
 
     hyper_params = get_hyperparameters(regression_estimator)
     est_name = type(regression_estimator).__name__
