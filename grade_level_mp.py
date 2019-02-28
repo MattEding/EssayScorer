@@ -29,7 +29,6 @@ logger = utils.get_logger(f'{NAME}_grade_level_{FUNC.__name__}', __name__)
 
 #: Directory Paths
 data = pathlib.Path.cwd() / 'data'
-pkls = data / 'pkls'
 npys = data / 'npys'
 
 
@@ -93,7 +92,8 @@ def grade_level_range(start=0, stop=None, func=text_standard):
 
     grade_level_partial = functools.partial(grade_level, func=func)
     with multiprocessing.Pool() as pool:
-        i_grade_levels = pool.map(grade_level_partial, enumerate(corrs[START:STOP], start=start))
+        i_grade_levels = pool.map(grade_level_partial,
+                                  enumerate(corrs[start:stop], start=start))
 
     idxs, grade_levels = map(list, zip(*i_grade_levels))
 

@@ -1,4 +1,3 @@
-import functools
 import multiprocessing
 import pathlib
 
@@ -16,7 +15,6 @@ logger = utils.get_logger(f'{NAME}_sentiment', __name__)
 
 #: Directory Paths
 data = pathlib.Path.cwd() / 'data'
-pkls = data / 'pkls'
 npys = data / 'npys'
 
 #: Load Corrections Array
