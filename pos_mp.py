@@ -30,6 +30,7 @@ def pos_range(start=0, stop=None):
     logger.info(f'Start Index: {NAME} @ {start}')
 
     with multiprocessing.Pool() as pool:
+        # Not logging indices... oops
         pos_counters = pool.map(nlp_util.parts_of_speech, corrs[start:stop])
 
     df_pos = pd.DataFrame(pos_counters)

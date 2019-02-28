@@ -17,6 +17,7 @@ FLASK
 MODELING
  - pickle models
     * joblib
+    * google: sklearn save models
  - ensemble
  - extra libs
     * xgboost
@@ -36,4 +37,8 @@ DOCSTRINGS
  - module docs
  - tidy func docs
  - make package + doc
+
+
+KAGGLE API
+ - auto fetch zipped data
 
