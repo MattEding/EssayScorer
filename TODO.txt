@@ -24,3 +24,16 @@ MODELING
     * etc
  - graphviz
  
+
+REFACTOR
+ - remove i_XXX -> XXX
+ - don't assign global arr
+    * see pos_mp.py for df version
+ - df the grade level functions
+ 
+
+DOCSTRINGS
+ - module docs
+ - tidy func docs
+ - make package + doc
+
