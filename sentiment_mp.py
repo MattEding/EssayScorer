@@ -10,11 +10,9 @@ import nlp_util
 import utils
 
 
-#: User Input Prompts
 NAME = input('Input data name: ').strip().lower()
-
-reprlib.aRepr.maxstring = 70
 logger = utils.get_logger(f'{NAME}_sentiment', __name__)
+reprlib.aRepr.maxstring = 70
 
 #: Directory Paths
 data = pathlib.Path.cwd() / 'data'
