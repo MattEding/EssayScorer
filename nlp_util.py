@@ -2,17 +2,11 @@ import collections
 import string
 
 import numpy as np
-
 from nltk.corpus import stopwords
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
 from textblob import TextBlob, WordList
 
-
-# PUNCTUATION = string.punctuation
-# STOPWORDS = stopwords.words('english')
 
 NOUN_MAP = {
     'common': frozenset('EMAIL MONEY NUM PERCENT TIME'.split()),
@@ -76,7 +70,6 @@ def blobify(text):
     return text
 
 
-#: lemmatize prompt and essay before checking similarity
 def prompt_similarity(prompt, essay, metric=cosine_similarity, vectorizer=TfidfVectorizer):
     """Return the metric measurement between the prompt and essay.
     
@@ -151,7 +144,6 @@ def lower_with_proper(text):
     return ' '.join(lower_proper)
 
 
-# need to lower all words first
 def lemmatize(text):
     """Lemmatize text.
     

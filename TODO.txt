@@ -1,0 +1,26 @@
+FEATURES:
+ - essay word count
+ - average sentence length (w/o stopwords)
+ - average word length
+
+
+FLASK
+ - type grade level
+ - prompt box
+ - essay box
+ - highlight 'errors'
+    * color code based on how uncertain
+ - score essay button
+ - heroku (gunicorn)
+
+
+MODELING
+ - pickle models
+    * joblib
+ - ensemble
+ - extra libs
+    * xgboost
+    * catboosterizer
+    * etc
+ - graphviz
+ 

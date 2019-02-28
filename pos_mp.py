@@ -1,7 +1,4 @@
-import collections
-import functools
 import multiprocessing
-import operator
 import pathlib
 
 import numpy as np
@@ -25,13 +22,6 @@ pkls = data / 'pkls'
 npy_corrs = npys / f'{NAME}_corrections.npy'
 corrs = np.load(npy_corrs)
 
-#: Load Prompt Similarity Arrays
-# npy_pos = npys / f'{NAME}_pos.npy'
-# if npy_pos.exists():
-#     arr_pos = np.load(npy_pos)
-# else:
-#     arr_pos = np.empty(len(corrs), dtype=object)
-
 
 def pos_range(start=0, stop=None):
     """TODO
@@ -44,8 +34,6 @@ def pos_range(start=0, stop=None):
 
     df_pos = pd.DataFrame(pos_counters)
     df_pos.to_pickle(pkls / f'{NAME}_pos.pkl')
-    # arr_pos[:] = pos_counters
-    # np.save(npy_pos, arr_pos)
 
     logger.info(f'Stop Index: {NAME} @ {stop}')
 
