@@ -19,17 +19,18 @@ logger = utils.get_logger(f'{NAME}_pos', __name__)
 #: Directory Paths
 data = pathlib.Path.cwd() / 'data'
 npys = data / 'npys'
+pkls = data / 'pkls'
 
 #: Load Corrections Array
 npy_corrs = npys / f'{NAME}_corrections.npy'
 corrs = np.load(npy_corrs)
 
 #: Load Prompt Similarity Arrays
-npy_pos = npys / f'{NAME}_pos.npy'
-if npy_pos.exists():
-    arr_pos = np.load(npy_pos)
-else:
-    arr_pos = np.empty(len(corrs), dtype=object)
+# npy_pos = npys / f'{NAME}_pos.npy'
+# if npy_pos.exists():
+#     arr_pos = np.load(npy_pos)
+# else:
+#     arr_pos = np.empty(len(corrs), dtype=object)
 
 
 def pos_range(start=0, stop=None):
@@ -41,12 +42,10 @@ def pos_range(start=0, stop=None):
     with multiprocessing.Pool() as pool:
         pos_counters = pool.map(nlp_util.parts_of_speech, corrs[start:stop])
 
-    arr_pos[:] = pos_counters
-    np.save(npy_pos, arr_pos)
-
-    pos_keys = (c.keys() for c in pos_counters)
-    all_pos = functools.reduce(operator.or_, pos_keys, set())
-    print(all_pos)
+    df_pos = pd.DataFrame(pos_counters)
+    df_pos.to_pickle(pkls / f'{NAME}_pos.pkl')
+    # arr_pos[:] = pos_counters
+    # np.save(npy_pos, arr_pos)
 
     logger.info(f'Stop Index: {NAME} @ {stop}')
 
