@@ -1,9 +1,11 @@
+import collections
 import functools
 import multiprocessing
 import operator
 import pathlib
 
 import numpy as np
+import pandas as pd
 
 import nlp_util
 import utils
@@ -23,7 +25,7 @@ npy_corrs = npys / f'{NAME}_corrections.npy'
 corrs = np.load(npy_corrs)
 
 #: Load Prompt Similarity Arrays
-npy_pos = npys / f'{NAME}_polarity.npy'
+npy_pos = npys / f'{NAME}_pos.npy'
 if npy_pos.exists():
     arr_pos = np.load(npy_pos)
 else:
@@ -39,7 +41,7 @@ def pos_range(start=0, stop=None):
     with multiprocessing.Pool() as pool:
         pos_counters = pool.map(nlp_util.parts_of_speech, corrs[start:stop])
 
-    arr_polarity[:] = pos_counters
+    arr_pos[:] = pos_counters
     np.save(npy_pos, arr_pos)
 
     pos_keys = (c.keys() for c in pos_counters)

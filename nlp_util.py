@@ -19,6 +19,13 @@ NOUN_MAP = {
     'proper': frozenset('CAPS CITY DATE DR LOCATION MONTH PERSON ORGANIZATION STATE'.split()),
 }
 
+POS = ('CC CD DT EX FW IN JJ JJR JJS LS MD NN NNP NNPS NNS PDT POS PRP PRP$ '
+       'RB RBR RBS RP SYM TO UH VB VBD VBG VBN VBP VBZ WDT WP WP$ WRB').split()
+
+_POS_COUNTER = collections.Counter()
+for pos in POS:
+    _POS_COUNTER[pos] = 0
+
 
 def clean_stopwords_punctuation(wordlist, punctuation=string.punctuation, stopwords=stopwords.words('english')):
     """Return cleaned text without stopwords or punctuation.
@@ -174,10 +181,12 @@ def parts_of_speech(text):
     
     Returns
     -------
-    pos : Counter
+    pos_counter : Counter
         Counter of all part of speech occurances in text.
     """
     
     text = blobify(text)
     _, pos = zip(*text.pos_tags)
-    return collections.Counter(pos)
+    pos_counter = _POS_COUNTER.copy()
+    pos_counter.update(pos)
+    return pos_counter
