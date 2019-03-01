@@ -9,7 +9,6 @@ import textblob
 import nlp_util
 
 
-
 model_pkl = pathlib.Path.cwd() / 'data' / 'models' / 'rand_forest.pkl'
 with open(model_pkl, 'rb') as fp:
     model = pickle.load(fp)
@@ -23,7 +22,6 @@ def correct(essay):
 def similarity(corrected, prompt):
     clean_prompt = nlp_util.clean(prompt)
     clean_essay = nlp_util.clean(corrected)
-
     count_meas = nlp_util.prompt_similarity(clean_prompt, clean_essay,
                                             vectorizer=CountVectorizer)
     tfidt_meas = nlp_util.prompt_similarity(clean_prompt, clean_essay,
@@ -73,3 +71,21 @@ def score_essay(features):
     elif score > 100:
         score = 100.0
     return f'{score}%'
+
+
+def process_args(args):
+    essay = args.get('essay', '')
+    prompt = args.get('prompt', '')
+    grade_level = args.get('grade_level')
+    if grade_level is not None:
+        grade_level = int(grade_level)
+
+    score = ''
+    if all(arg for arg in [essay, prompt, grade_level]):
+        try:
+            features = api.all_features(essay, prompt, grade_level)
+            score = api.score_essay(features)
+        except Exception:
+            pass
+
+    return essay, prompt, grade_level, score

@@ -1,47 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <title>Essay Scorer</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+  <head>
+    <title>Essay Scorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
 
-<body>
+  <body>
 
-  <h1>
-    Essay Scorer
-  </h1>
+    <h1>Essay Scorer</h1>
 
-  <form action="/">
-    <p>Grade Level:
-      <select required name="grade_level">
-        <option value="">None</option>
-        {% for gl in range(7, 13) %}
-          {% if gl == grade_level %}
-            <option value="{{ gl }}" selected="selected">{{ gl }}</option>
-          {% else %}
-            <p>train</p>
-            <option value="{{ gl }}">{{ gl }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-    </p>
+    <form action="/">
 
-    <textarea required rows="6" name="prompt" placeholder="Enter prompt.">{{ prompt }}</textarea>
-    <br><br>
-    <textarea required rows="18" name="essay" placeholder="Enter essay.">{{ essay }}</textarea>
-    <br><br>
+      <p>Grade Level:
+        <select required name="grade_level">
+          <option value="">None</option>
+          {% for gl in range(7, 13) %}
+            {% if gl == grade_level %}
+              <option value="{{ gl }}" selected="selected">{{ gl }}</option>
+            {% else %}
+              <p>train</p>
+              <option value="{{ gl }}">{{ gl }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </p>
 
-    <input type="submit" value="Score Essay">
-  </form>
+      <textarea required rows="6" name="prompt" placeholder="Enter prompt.">{{ prompt }}</textarea>
+      <br><br>
+      <textarea required rows="18" name="essay" placeholder="Enter essay.">{{ essay }}</textarea>
+      <br><br>
+      <input type="submit" value="Score Essay">
+      
+    </form>
 
-  <form action="/">
-    <input type="submit" value="Clear Fields">
-  </form>
+    <form action="/">
+      <input type="submit" value="Clear Fields">
+    </form>
 
-  <p>
-    Score: {{ score }}
-  </p>
-</body>
+    <p>Score: {{ score }}</p>
+
+  </body>
 
 </html>
