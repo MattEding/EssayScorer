@@ -13,6 +13,8 @@ def index():
     essay = args.get('essay', '')
     prompt = args.get('prompt', '')
     grade_level = args.get('grade_level')
+    if grade_level is not None:
+        grade_level = int(grade_level)
 
     score = ''
     if all(arg for arg in [essay, prompt, grade_level]):

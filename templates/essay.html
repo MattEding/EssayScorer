@@ -16,7 +16,7 @@
     <p>Grade Level:
       <select required name="grade_level">
         <option value="">None</option>
-        {% for gl in [7, 8, 9, 10, 11, 12] %}
+        {% for gl in range(7, 13) %}
           {% if gl == grade_level %}
             <option value="{{ gl }}" selected="selected">{{ gl }}</option>
           {% else %}
