@@ -12,7 +12,7 @@ import utils
 
 
 NAME = input('Input data name: ').strip().lower()
-logger = utils.get_logger(f'{NAME}_grade_level', __name__)
+logger = utils.get_logger(f'{NAME}_difficulty_level', __name__)
 reprlib.aRepr.maxstring = 70
 
 #: Directory Paths
@@ -24,16 +24,8 @@ pkls = data / 'pkls'
 npy_corrs = npys / f'{NAME}_corrections.npy'
 corrs = np.load(npy_corrs)
 
-#: Setup Grade Level Funcs
-_funcs = [textstat.flesch_reading_ease, textstat.smog_index,
-          textstat.flesch_kincaid_grade, textstat.coleman_liau_index,
-          textstat.automated_readability_index, textstat.dale_chall_readability_score,
-          textstat.linsear_write_formula, textstat.gunning_fog]
 
-GradeLevel = collections.namedtuple('GradeLevel', [f.__name__ for f in _funcs])
-
-
-def grade_level(text):
+def difficulty_level(text):
     """Return the estimated school grade level required to understand the text.
 
     Parameters
@@ -45,22 +37,22 @@ def grade_level(text):
 
     Returns
     -------
-    i_grade_level : (int, float)
+    i_difficulty_level : (int, float)
         Pair of ith text estimated grade level to understand.
     """
 
     try:
-        grade_level = [f(text) for f in _funcs]
-        grade_level = GradeLevel(*grade_level)
+        difficulty_level = [f(text) for f in nlp_util.diff_funcs]
+        difficulty_level = nlp_util.DifficultyLevel(*difficulty_level)
     except BaseException as exc:
         logger.exception(exc)
         raise
     else:
         logger.info(f'{NAME} : {reprlib.repr(text)}')
-    return grade_level._asdict()
+    return difficulty_level._asdict()
 
 
-def grade_level_range(start=0, stop=None):
+def difficulty_level_range(start=0, stop=None):
     """Save estimated grade levels of all essays in the given range from start to stop.
 
     Parameters
@@ -78,13 +70,13 @@ def grade_level_range(start=0, stop=None):
     logger.info(f'Start Index: {NAME} @ {start}')
 
     with multiprocessing.Pool() as pool:
-        grade_levels = pool.map(grade_level, corrs[start:stop])
+        difficulty_levels = pool.map(difficulty_level, corrs[start:stop])
 
-    df_grade_levels = pd.DataFrame(grade_levels)
-    df_grade_levels.to_pickle(pkls / f'{NAME}_grade_level.pkl')
+    df_difficulty_levels = pd.DataFrame(difficulty_levels)
+    df_difficulty_levels.to_pickle(pkls / f'{NAME}_difficulty_level.pkl')
 
     logger.info(f'Stop Index: {NAME} @ {stop}')
 
 
 if __name__ == '__main__':
-    grade_level_range()
+    difficulty_level_range()

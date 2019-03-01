@@ -97,9 +97,10 @@ def get_hyperparameters(estimator):
     hyper_params = (est_p for def_p, est_p in zip(default_params, estimator_params) if def_p != est_p)
     hyper_params = (f'{arg}={val}' for arg, val in hyper_params)
     hyper_params = ', '.join(hyper_params)
+    return hyper_params
 
 
-def plot_residuals(regression_estimator, X, y, *, alpha=0.2, dpi=1000, save_path=None):
+def plot_residuals(fit_estimator, X, y, *, alpha=0.2, dpi=1000, save_path=None):
     """Plot residuals with option to save to disk.
 
     Parameters
@@ -107,12 +108,11 @@ def plot_residuals(regression_estimator, X, y, *, alpha=0.2, dpi=1000, save_path
     # TODO:
     """
 
-    regression_estimator.fit(X, y)
-    predictions = regression_estimator.predict(X)
+    predictions = fit_estimator.predict(X)
     residuals = y - predictions
 
-    hyper_params = get_hyperparameters(regression_estimator)
-    est_name = type(regression_estimator).__name__
+    hyper_params = get_hyperparameters(fit_estimator)
+    est_name = type(fit_estimator).__name__
     title = f'Residual Plot: {est_name}({hyper_params})'
 
     plot = sns.scatterplot(x=predictions.ravel(), y=residuals.ravel(), alpha=alpha)

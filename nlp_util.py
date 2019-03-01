@@ -6,6 +6,7 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from textblob import TextBlob, WordList
+import textstat
 
 
 NOUN_MAP = {
@@ -23,7 +24,7 @@ for pos in POS:
 
 def clean_stopwords_punctuation(wordlist, punctuation=string.punctuation, stopwords=stopwords.words('english')):
     """Return cleaned text without stopwords or punctuation.
-    
+
     Parameters
     ----------
     wordlist : WordList
@@ -32,36 +33,56 @@ def clean_stopwords_punctuation(wordlist, punctuation=string.punctuation, stopwo
         Set of punctuation characters to ignore.
     stopwords : container, optional
         Set of strings of words to ignore.
-        
+
     Returns
     -------
     cleaned : str
         String of cleaned text joined.
     """
-    
+
     cleaned = WordList(w for w in wordlist if w not in punctuation and w not in stopwords)
     return ' '.join(cleaned)
 
 
+def clean(text):
+    """Return cleaned text with stopwords removed, no punctuation, and lemmatized.
+
+    Parameters
+    ----------
+    text : str
+        Text string.
+
+    Returns
+    -------
+    cleaned : str
+        Cleaned string.
+    """
+
+    lower_proper = lower_with_proper(text)
+    lemmas = lemmatize(lower_proper)
+    cleaned = clean_stopwords_punctuation(lemmas)
+    return cleaned
+
+
 def blobify(text):
     """Coerce text to be a TextBlob.
-    
+
     Parameters
     ----------
     text : str, TextBlob
         Text to be converted.
-    
+
     Returns
     -------
     textblob : TextBlob
         TextBlob of the text.
-        
+
     Raises
     ------
     TypeError
         If the text is not either an instance of str or TextBlob.
     """
-    
+
     try:
         text = TextBlob(text)
     except TypeError:
@@ -72,7 +93,7 @@ def blobify(text):
 
 def prompt_similarity(prompt, essay, metric=cosine_similarity, vectorizer=TfidfVectorizer):
     """Return the metric measurement between the prompt and essay.
-    
+
     Parameters
     ----------
     prompt : str
@@ -83,13 +104,13 @@ def prompt_similarity(prompt, essay, metric=cosine_similarity, vectorizer=TfidfV
         Metric to compare the two documents.
     vectorizer : VectorizerMixin, optional
         Vectorizer to fit transform the documents.
-        
+
     Returns
     -------
     measure : float
         Measurement between the vectorized documents.
     """
-    
+
     vec = vectorizer()
     X = vec.fit_transform([essay, prompt])
     measure = np.asscalar(metric(X[0], X[1]))
@@ -98,20 +119,20 @@ def prompt_similarity(prompt, essay, metric=cosine_similarity, vectorizer=TfidfV
 
 def spelling_error_rate(original, corrected):
     """Return the spelling error rate of original text in comparison to corrected text.
-    
+
     Parameters
     ----------
     original : str, TextBlob
         Original essay.
     corrected : str, TextBlob
         Corrected essay.
-    
+
     Returns
     -------
     rate : float
         Ratio of spelling errors to the number of words in original.
     """
-    
+
     original = blobify(original)
     corrected = blobify(corrected)
     rate = sum(not word in corrected.tokenize() for word in original.tokenize()) / len(original)
@@ -120,18 +141,18 @@ def spelling_error_rate(original, corrected):
 
 def lower_with_proper(text):
     """Return text with all non-proper nouns lowercased regardless of punctuation.
-    
+
     Parameters
     ----------
     text : str
         Text to lowercase.
-    
+
     Returns
     -------
     lower_proper : str
         Lowercased text except for proper nouns.
     """
-    
+
     proper_flags = NOUN_MAP['proper']
     lower_proper = []
     for word in map(str.lower, text.split()):
@@ -146,18 +167,18 @@ def lower_with_proper(text):
 
 def lemmatize(text):
     """Lemmatize text.
-    
+
     Parameters
     ----------
     text : str, TextBlob
         Text to lemmatize.
-    
+
     Returns
     -------
     lemmas : WordList
         List of tokenized words that have been lemmatized.
     """
-    
+
     text = blobify(text)
     lemmas = text.tokenize().lemmatize()
     return lemmas
@@ -165,20 +186,29 @@ def lemmatize(text):
 
 def parts_of_speech(text):
     """Return counts of each POS.
-    
+
     Parameters
     ----------
     text : str, TextBlob
         Text to process.
-    
+
     Returns
     -------
     pos_counter : Counter
         Counter of all part of speech occurances in text.
     """
-    
+
     text = blobify(text)
     _, pos = zip(*text.pos_tags)
     pos_counter = _POS_COUNTER.copy()
     pos_counter.update(pos)
     return pos_counter
+
+
+#: Setup Grade Level Funcs
+diff_funcs = [textstat.flesch_reading_ease, textstat.smog_index,
+              textstat.flesch_kincaid_grade, textstat.coleman_liau_index,
+              textstat.automated_readability_index, textstat.dale_chall_readability_score,
+              textstat.linsear_write_formula, textstat.gunning_fog]
+
+DifficultyLevel = collections.namedtuple('DifficultyLevel', [f.__name__ for f in diff_funcs])
