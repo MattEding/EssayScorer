@@ -1,3 +1,4 @@
+catboost
 flask
 joblib
 matplotlib
@@ -9,4 +10,5 @@ scikit-learn
 seaborn
 textblob
 textstat
+xgboost
 xlrd
