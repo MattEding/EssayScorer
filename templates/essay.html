@@ -1,42 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
 <head>
   <title>Essay Scorer</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-
 <body>
 
-<h1>Essay Scorer</h1>
+  <h1>
+    Essay Scorer
+  </h1>
 
-<form action="/action_page.php">
-  <p>Select Grade Level
-    <select required name="grade_level">
-      <option value="">None</option>
-      <option value="7">7</option>
-      <option value="8">8</option>
-      <option value="9">9</option>
-      <option value="10">10</option>
-      <option value="11">11</option>
-      <option value="12">12</option>
-    </select>
+  <form action="/">
+    <p>Grade Level:
+      <select required name="grade_level">
+        <option value="">None</option>
+        {% for gl in [7, 8, 9, 10, 11, 12] %}
+          {% if gl == grade_level %}
+            <option value="{{ gl }}" selected="selected">{{ gl }}</option>
+          {% else %}
+            <p>train</p>
+            <option value="{{ gl }}">{{ gl }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </p>
+
+    <textarea required rows="6" name="prompt" placeholder="Enter prompt.">{{ prompt }}</textarea>
+    <br><br>
+    <textarea required rows="18" name="essay" placeholder="Enter essay.">{{ essay }}</textarea>
+    <br><br>
+
+    <input type="submit" value="Score Essay">
+  </form>
+
+  <form action="/">
+    <input type="submit" value="Clear Fields">
+  </form>
+
+  <p>
+    Score: {{ score }}
   </p>
-
-  <textarea required rows="4" cols="100" name="prompt" placeholder="Replace this text with essay prompt."></textarea>
-
-  <br><br>
-
-  <textarea required rows="10" cols="100" name="essay" placeholder="Replace this text with essay response."></textarea>
-
-  <br><br>
-
-<input type="submit" value="Score Essay">
-</form>
-
 </body>
-
 
 </html>

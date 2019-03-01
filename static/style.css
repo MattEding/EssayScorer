@@ -1,0 +1,32 @@
+body {
+  background-image: url("https://download.hipwallpaper.com/desktop/1536/864/48/6/SORZai.jpg");
+  opacity: 0.75;
+}
+
+h1 {
+  color: white;
+  text-align: center;
+  text-decoration: underline;
+}
+
+p {
+  color: white;
+  font-family: verdana;
+  font-size: 18px;
+}
+
+textarea {
+  width: 100%;
+  border: 2px solid #393736;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: none;
+}
+
+select {
+  font-size: 16px;
+}
+
+input {
+  font-size: 14px;
+}

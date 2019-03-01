@@ -1,10 +1,18 @@
+import pathlib
+import pickle
+
 import pandas as pd
 import numpy as np
-
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import textblob
 
 import nlp_util
+
+
+
+model_pkl = pathlib.Path.cwd() / 'data' / 'models' / 'rand_forest.pkl'
+with open(model_pkl, 'rb') as fp:
+    model = pickle.load(fp)
 
 
 def correct(essay):
@@ -53,4 +61,15 @@ def all_features(essay, prompt, grade_level):
     diff_df = difficulty(corr)
     sent_df = sentiment(corr)
     dfs = [grade_df, sim_df, diff_df, sent_df, pos_df]
-    return pd.concat(dfs, axis=1)
+    features = pd.concat(dfs, axis=1)
+    return features
+
+
+def score_essay(features):
+    pred = model.predict(features)
+    score = np.asscalar(pred.round(1))
+    if score < 0:
+        score = 0.0
+    elif score > 100:
+        score = 100.0
+    return f'{score}%'
