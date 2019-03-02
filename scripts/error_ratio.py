@@ -3,7 +3,7 @@ import pathlib
 
 import pandas as pd
 
-import feature_util
+import utils.feature
 
 
 pkls = pathlib.Path.cwd() / 'data' / 'pkls'

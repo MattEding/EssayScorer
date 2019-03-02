@@ -2,11 +2,6 @@ import functools
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-from sklearn.linear_model import LinearRegression, Lasso, Ridge
-from sklearn.svm import SVR
-from sklearn.tree import DecisionTreeRegressor, ExtraTreeRegressor
-
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import cross_val_score, GridSearchCV
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler

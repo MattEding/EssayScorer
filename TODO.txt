@@ -5,33 +5,26 @@ FEATURES:
 
 
 FLASK
- - type grade level
- - prompt box
- - essay box
  - highlight 'errors'
     * color code based on how uncertain
- - score essay button
  - heroku (gunicorn)
 
 
 MODELING
  - pickle models
     * joblib
-    * google: sklearn save models
- - ensemble
- - extra libs
-    * xgboost
-    * catboosterizer
-    * etc
+ - classifier A-F
  - graphviz
- 
+
 
 REFACTOR
  - remove i_XXX -> XXX
  - don't assign global arr
     * see pos_mp.py for df version
  - df the grade level functions
- 
+ - utils.feature --> return dicts not dfs because
+                     pd.concat(dfs) slow vs pd.DataFrame(dict.union/chain_map)?
+
 
 DOCSTRINGS
  - module docs
@@ -41,4 +34,3 @@ DOCSTRINGS
 
 KAGGLE API
  - auto fetch zipped data
-
