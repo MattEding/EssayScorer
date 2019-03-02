@@ -4,34 +4,28 @@ import pathlib
 import numpy as np
 import pandas as pd
 
-import nlp_util
-import utils
+import utils.feature
+import utils.log
 
 
-#: User Input Prompts
-NAME = input('Input data name: ').strip().lower()
-
-logger = utils.get_logger(f'{NAME}_pos', __name__)
-
-#: Directory Paths
-data = pathlib.Path.cwd() / 'data'
-npys = data / 'npys'
-pkls = data / 'pkls'
-
-#: Load Corrections Array
-npy_corrs = npys / f'{NAME}_corrections.npy'
-corrs = np.load(npy_corrs)
-
-
-def pos_range(start=0, stop=None):
+def pos_range(name, start=0, stop=None):
     """TODO
     """
 
-    logger.info(f'Start Index: {NAME} @ {start}')
+    data = pathlib.Path.cwd() / 'data'
+    npys = data / 'npys'
+    pkls = data / 'pkls'
+
+    corrections_npy = npys / f'{name}_corrections.npy'
+    sentiment_pkl = pkls / f'{name}_sentiment.pkl'
+
+    corrections_arr = np.load(corrections_npy)[start:stop]
+
+    logger = utils.log.get_logger(f'{name}_sentiment', __name__)
+    logger.info(f'Start Index: {name} @ {start}')
 
     with multiprocessing.Pool() as pool:
-        # Not logging indices... oops
-        pos_counters = pool.map(nlp_util.parts_of_speech, corrs[start:stop])
+        pos_counters = pool.map(utils.feature.parts_of_speech, corrections_arr)
 
     df_pos = pd.DataFrame(pos_counters)
     df_pos.to_pickle(pkls / f'{NAME}_pos.pkl')

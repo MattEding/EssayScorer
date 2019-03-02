@@ -1,3 +1,4 @@
+import collections
 import multiprocessing
 import pathlib
 
@@ -40,9 +41,9 @@ def difficulty_level_range(name, start=0, stop=None):
     logger.info(f'Start Index: {name} @ {start}')
 
     with multiprocessing.Pool() as pool:
-        difficulty_chain_map = pool.map(utils.feature.difficulty_level, corrections_arr)
+        difficulty_dicts = pool.map(utils.feature.difficulty_level, corrections_arr)
 
-    difficulty_level_df = pd.DataFrame([difficulty_chain_map])
+    difficulty_level_df = pd.DataFrame(collections.ChainMap(difficulty_dicts))
     difficulty_level_df.to_pickle(difficulty_level_pkl)
 
     logger.info(f'Stop Index: {name} @ {stop}')
