@@ -10,8 +10,8 @@ import textstat
 
 
 NOUN_MAP = {
-    'common': frozenset('EMAIL MONEY NUM PERCENT TIME'.split()),
-    'proper': frozenset('CAPS CITY DATE DR LOCATION MONTH PERSON ORGANIZATION STATE'.split()),
+    'common': 'EMAIL MONEY NUM PERCENT TIME'.split(),
+    'proper': 'CAPS CITY DATE DR LOCATION MONTH PERSON ORGANIZATION STATE'.split(),
 }
 
 POS = ('CC CD DT EX FW IN JJ JJR JJS LS MD NN NNP NNPS NNS PDT POS PRP PRP$ '
@@ -22,46 +22,12 @@ for pos in POS:
     _POS_COUNTER[pos] = 0
 
 
-def clean_stopwords_punctuation(wordlist, punctuation=string.punctuation, stopwords=stopwords.words('english')):
-    """Return cleaned text without stopwords or punctuation.
+DIFFICULTY_FUNCS = (textstat.flesch_reading_ease, textstat.smog_index,
+                    textstat.flesch_kincaid_grade, textstat.coleman_liau_index,
+                    textstat.automated_readability_index, textstat.dale_chall_readability_score,
+                    textstat.linsear_write_formula, textstat.gunning_fog)
 
-    Parameters
-    ----------
-    wordlist : WordList
-        WordList of words to clean.
-    punctuation : container, optional
-        Set of punctuation characters to ignore.
-    stopwords : container, optional
-        Set of strings of words to ignore.
-
-    Returns
-    -------
-    cleaned : str
-        String of cleaned text joined.
-    """
-
-    cleaned = WordList(w for w in wordlist if w not in punctuation and w not in stopwords)
-    return ' '.join(cleaned)
-
-
-def clean(text):
-    """Return cleaned text with stopwords removed, no punctuation, and lemmatized.
-
-    Parameters
-    ----------
-    text : str
-        Text string.
-
-    Returns
-    -------
-    cleaned : str
-        Cleaned string.
-    """
-
-    lower_proper = lower_with_proper(text)
-    lemmas = lemmatize(lower_proper)
-    cleaned = clean_stopwords_punctuation(lemmas)
-    return cleaned
+DifficultyLevel = collections.namedtuple('DifficultyLevel', [func.__name__ for func in DIFFICULTY_FUNCS])
 
 
 def blobify(text):
@@ -91,6 +57,76 @@ def blobify(text):
     return text
 
 
+def lemmatize(text):
+    """Lemmatize text.
+
+    Parameters
+    ----------
+    text : str, TextBlob
+        Text to lemmatize.
+
+    Returns
+    -------
+    lemmas : WordList
+        List of tokenized words that have been lemmatized.
+    """
+
+    text = blobify(text)
+    lemmas = text.tokenize().lemmatize()
+    return lemmas
+
+
+def clean_stopwords_punctuation(wordlist, punctuation=string.punctuation,
+                                stopwords=stopwords.words('english')):
+    """Return cleaned text without stopwords or punctuation.
+
+    Parameters
+    ----------
+    wordlist : WordList
+        WordList of words to clean.
+    punctuation : container, optional
+        Set of punctuation characters to ignore.
+    stopwords : container, optional
+        Set of strings of words to ignore.
+
+    Returns
+    -------
+    cleaned : str
+        String of cleaned text joined.
+    """
+
+    cleaned = WordList(w for w in wordlist if w not in punctuation and w not in stopwords)
+    cleaned = ' '.join(cleaned)
+    return cleaned
+
+
+def lower_with_proper(text):
+    """Return text with all non-proper nouns lowercased regardless of punctuation.
+
+    Parameters
+    ----------
+    text : str
+        Text to lowercase.
+
+    Returns
+    -------
+    lower_proper : str
+        Lowercased text except for proper nouns.
+    """
+
+    proper_flags = NOUN_MAP['proper']
+    lower_proper = []
+    for word in map(str.lower, text.split()):
+        #: '@' is a flag for special words
+        if word.startswith('@'):
+            word = word[1:]
+            if any(flag.lower() in word for flag in proper_flags):
+                word = word.upper()
+        lower_proper.append(word)
+    lower_proper = ' '.join(lower_proper)
+    return lower_proper
+
+
 def prompt_similarity(prompt, essay, metric=cosine_similarity, vectorizer=TfidfVectorizer):
     """Return the metric measurement between the prompt and essay.
 
@@ -117,73 +153,6 @@ def prompt_similarity(prompt, essay, metric=cosine_similarity, vectorizer=TfidfV
     return measure
 
 
-def spelling_error_rate(original, corrected):
-    """Return the spelling error rate of original text in comparison to corrected text.
-
-    Parameters
-    ----------
-    original : str, TextBlob
-        Original essay.
-    corrected : str, TextBlob
-        Corrected essay.
-
-    Returns
-    -------
-    rate : float
-        Ratio of spelling errors to the number of words in original.
-    """
-
-    original = blobify(original)
-    corrected = blobify(corrected)
-    rate = sum(not word in corrected.tokenize() for word in original.tokenize()) / len(original)
-    return rate
-
-
-def lower_with_proper(text):
-    """Return text with all non-proper nouns lowercased regardless of punctuation.
-
-    Parameters
-    ----------
-    text : str
-        Text to lowercase.
-
-    Returns
-    -------
-    lower_proper : str
-        Lowercased text except for proper nouns.
-    """
-
-    proper_flags = NOUN_MAP['proper']
-    lower_proper = []
-    for word in map(str.lower, text.split()):
-        #: flag for special words
-        if word.startswith('@'):
-            word = word[1:]
-            if any(flag.lower() in word for flag in proper_flags):
-                word = word.upper()
-        lower_proper.append(word)
-    return ' '.join(lower_proper)
-
-
-def lemmatize(text):
-    """Lemmatize text.
-
-    Parameters
-    ----------
-    text : str, TextBlob
-        Text to lemmatize.
-
-    Returns
-    -------
-    lemmas : WordList
-        List of tokenized words that have been lemmatized.
-    """
-
-    text = blobify(text)
-    lemmas = text.tokenize().lemmatize()
-    return lemmas
-
-
 def parts_of_speech(text):
     """Return counts of each POS.
 
@@ -205,10 +174,19 @@ def parts_of_speech(text):
     return pos_counter
 
 
-#: Setup Grade Level Funcs
-diff_funcs = [textstat.flesch_reading_ease, textstat.smog_index,
-              textstat.flesch_kincaid_grade, textstat.coleman_liau_index,
-              textstat.automated_readability_index, textstat.dale_chall_readability_score,
-              textstat.linsear_write_formula, textstat.gunning_fog]
+def correct(text):
+    """Return corrected text.
 
-DifficultyLevel = collections.namedtuple('DifficultyLevel', [f.__name__ for f in diff_funcs])
+    Parameters
+    ----------
+    text : str, TextBlob
+        Text to be corrected.
+
+    Returns
+    -------
+    correction : str
+        Corrected text string.
+    """
+
+    correction = str(blobify(text).correct()).strip()
+    return correction
