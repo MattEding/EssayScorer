@@ -9,12 +9,12 @@ from textblob import TextBlob, WordList
 import textstat
 
 
-DifficultyLevel = collections.namedtuple('DifficultyLevel', [func.__name__ for func in DIFFICULTY_FUNCS])
-
 DIFFICULTY_FUNCS = (textstat.flesch_reading_ease, textstat.smog_index,
                     textstat.flesch_kincaid_grade, textstat.coleman_liau_index,
                     textstat.automated_readability_index, textstat.dale_chall_readability_score,
                     textstat.linsear_write_formula, textstat.gunning_fog)
+
+DifficultyLevel = collections.namedtuple('DifficultyLevel', [func.__name__ for func in DIFFICULTY_FUNCS])
 
 NOUN_MAP = {
     'common': 'EMAIL MONEY NUM PERCENT TIME'.split(),

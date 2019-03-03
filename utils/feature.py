@@ -83,7 +83,7 @@ def pos(text):
     """
 
     pos_counter = utils.nlp.parts_of_speech(text)
-    total_count = sum(pos_counter.values)
+    total_count = sum(pos_counter.values())
     pos_dict = {pos: count / total_count for pos, count in pos_counter.items()}
     return pos_dict
 
