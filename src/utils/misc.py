@@ -110,7 +110,7 @@ def interpolate(df, col_min, col_max, new_min=0, new_max=100):
     return maps
 
 
-def merge_features(name):                       # Defunct with new feature_util functions
+def merge_features(pkls_path, name):
     """Merge all serialized features into a single dataframe.
 
     Parameters
@@ -124,26 +124,26 @@ def merge_features(name):                       # Defunct with new feature_util 
         DataFrame with all the features combined.
     """
 
-    essay_df = pd.read_pickle(pkls / f'{name}.pkl')
-    descr_df = pd.read_pickle(pkls / 'descr.pkl')[['essay_set', 'grade_level']]
+    def load_pickle(identifier=''):
+        return pd.read_pickle(pkls_path / f'{name}_{identifier}.pkl')
+
+    essay_df = pd.read_pickle(pkls_path / f'{name}.pkl')
+    descr_df = pd.read_pickle(pkls_path / 'descr.pkl')[['essay_set', 'grade_level']]
     essay_to_grade_level = descr_df.set_index('essay_set').to_dict()['grade_level']
 
+    #: features
+    difficulty_level_df = load_pickle('difficulty_level')
+    error_ratio_df = load_pickle('error_ratio')
     grade_level_arr = essay_df['essay_set'].map(essay_to_grade_level).values
     grade_level_df = pd.DataFrame(grade_level_arr, columns=['grade_level'])
+    pos_df = load_pickle('pos')
+    prompt_similarity_df = load_pickle('prompt_similarity')
+    sentiment_df = load_pickle('sentiment')
+    words_df = load_pickle('words')
 
-    promt_count_arr = np.load(npys / f'{name}_prompt_count.npy')
-    promt_count_df = pd.DataFrame(promt_count_arr, columns=['prompt_count'])
-
-    promt_tfidf_arr = np.load(npys / f'{name}_prompt_tfidf.npy')
-    promt_tfidf_df = pd.DataFrame(promt_tfidf_arr, columns=['prompt_tfidf'])
-
-    pos_df = pd.read_pickle(pkls / f'{name}_pos.pkl')
-    pos_df = pos_df.div(pos_df.sum(axis=1), axis=0)
-
+    #: targets
     percent_df = essay_df[['domain1_percent', 'domain2_percent']]
-    sentiment_df = pd.read_pickle(pkls / f'{name}_sentiment.pkl')
-    diff_level_df = pd.read_pickle(pkls / f'{name}_grade_level.pkl')
 
-    dfs = [grade_level_df, percent_df, promt_count_df, promt_tfidf_df,
-           diff_level_df, sentiment_df, pos_df]
+    dfs = [difficulty_level_df, error_ratio_df, grade_level_df, pos_df,
+           prompt_similarity_df, sentiment_df, words_df, percent_df]
     return pd.concat(dfs, axis=1)
