@@ -15,4 +15,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    # needs use_reloader otherwise cannot import scorer.api
+    app.run(use_reloader=False)

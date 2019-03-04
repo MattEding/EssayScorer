@@ -11,20 +11,13 @@ FLASK
 
 
 MODELING
- - pickle models
-    * joblib
  - classifier A-F
  - graphviz
 
 
-REFACTOR
- - df the grade level functions
-
-
 DOCSTRINGS
  - module docs
- - tidy func docs
- - make package + doc
+ - package doc
 
 
 KAGGLE API

@@ -6,7 +6,7 @@ import pandas as pd
 
 import utils.feature
 
-# need to redo model with error ratio -- had accidentally not used in model
+# TODO: need to redo model with error ratio -- had accidentally not used prior
 model_pkl = pathlib.Path.cwd() / 'data' / 'models' / 'rand_forest.pkl'
 with open(model_pkl, 'rb') as fp:
     model = pickle.load(fp)

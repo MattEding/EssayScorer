@@ -37,8 +37,8 @@ def difficulty_level(text):
 
     Returns
     -------
-    # difficulty_df : DataFrame shape=(1, 8)
-    #     DataFrame with columns for each difficulty level from TextStat library.
+    difficulty_dict : dict
+        Mapping with columns for each difficulty level from TextStat library.
     """
     difficulty_levels = [func(text) for func in utils.nlp.DIFFICULTY_FUNCS]
     difficulty_level_dict = utils.nlp.DifficultyLevel(*difficulty_levels)._asdict()
@@ -57,8 +57,8 @@ def error_ratio(original, corrected):
 
     Returns
     -------
-    # error_ratio_df : DataFrame shape=(1, 1)
-    #     Ratio of errors to the number of words in original.
+    error_ratio_dict : dict
+        Mappingf errors to the number of words in original.
     """
 
     original = utils.nlp.blobify(original)
@@ -78,8 +78,8 @@ def pos(text):
 
     Returns
     -------
-    # pos_df : DataFrame shape=(1, 36)
-    #     DataFrame with columns for each POS defined by NLTK library.
+    pos_dict : dict
+        Mapping with columns for each POS defined by NLTK library.
     """
 
     pos_counter = utils.nlp.parts_of_speech(text)
@@ -98,8 +98,8 @@ def sentiment(text):
 
     Returns
     -------
-    # sentiment_df : DataFrame shape=(1, 2)
-    #     DataFrame with columns: polarity, subjectivity.
+    sentiment_dict : dict
+        Mapping with columns: polarity, subjectivity.
     """
 
     sentiment_dict = utils.nlp.blobify(text).sentiment._asdict()
@@ -118,8 +118,8 @@ def similarity(text1, text2):
 
     Returns
     -------
-    # similarity_df : DataFrame shape=(1, 2)
-    #     DataFrame with columns: count, tfidf
+    similarity_dict : dict
+        Mapping with columns: count, tfidf
     """
 
     clean1 = _clean(text1)

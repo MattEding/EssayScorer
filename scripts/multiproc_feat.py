@@ -1,4 +1,5 @@
 import collections
+import logging
 import multiprocessing
 import pathlib
 
@@ -63,8 +64,9 @@ def main():
     idx = input('Choose feature function: ')
     feature = features[int(idx)]
 
-    # logger = utils.log.get_logger(f'{name}_{feature.__name__}', __name__)
-    # logger.info(f'Start Index: {name} @ {start}')
+    logger = utils.log.get_logger(f'{name}_{feature.__name__}', __name__, level=logging.INFO)
+    print(logger)
+    logger.info(f'STARTED')
 
     corrections_arr = corrections_arr[:3]   # testing
 
@@ -79,7 +81,7 @@ def main():
     # feature_df.to_pickle(feature_pkl)
     print(feature_df)
 
-    # logger.info(f'Stop Index: {NAME} @ {stop}')
+    logger.info(f'FINISHED')
 
 
 main()
