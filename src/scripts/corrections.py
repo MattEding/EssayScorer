@@ -27,16 +27,16 @@ logs = data / 'logs'
 log_file = logs / f'{NAME}_corrections.log'
 log_file.touch()
 fmt = '{name} - {asctime} - {levelname} - Message: {message}'
-logging.basicConfig(filename=log_file, 
-                    level=logging.INFO, 
-                    style='{', 
+logging.basicConfig(filename=log_file,
+                    level=logging.INFO,
+                    style='{',
                     format=fmt)
 logger = logging.getLogger(__name__)
 
 
 #: Load Essay Array
 pkl = pkls / f'{NAME}.pkl'
-df = pd.read_pickle(pkl)        
+df = pd.read_pickle(pkl)
 essays = df['essay'][START:STOP]
 
 
@@ -50,18 +50,18 @@ else:
 
 def correct(i_essay):
     """Correct the ith essay spelling.
-    
+
     Parameters
     ----------
     i_essay : (int, str)
         Pair containing index and string.
-    
+
     Returns
     -------
     i_corr : (i, str)
-        Pair of ith string of corrections. 
+        Pair of ith string of corrections.
     """
-    
+
     i, essay = i_essay
     try:
         corr = str(TextBlob(essay).correct())
@@ -75,26 +75,26 @@ def correct(i_essay):
 
 def correct_range(start=0, stop=None):
     """Correct all essays in the given range from start to stop.
-    
+
     Parameters
     ----------
     start : int, optional
         Slice start index.
-    
+
     stop : int, optional
         Slice stop index.
     """
-    
+
     logger.info(f'Start Index: {NAME} @ {start}')
-    
+
     with multiprocessing.Pool() as pool:
         i_corrs = pool.map(correct, enumerate(essays, start=start))
-    
+
     idxs, corrs = map(list, zip(*i_corrs))
     arr[idxs] = corrs
     np.save(npy, arr)
     logger.info(f'Stop Index: {NAME} @ {stop}')
 
-    
+
 if __name__ == '__main__':
     correct_range(START, STOP)

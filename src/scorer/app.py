@@ -1,6 +1,6 @@
 import flask
 
-import scorer.api
+import src.scorer.api
 
 
 app = flask.Flask(__name__)
@@ -9,7 +9,7 @@ app = flask.Flask(__name__)
 @app.route('/', methods=["POST", "GET"]) #
 def index():
     args = flask.request.args
-    essay, prompt, grade_level, score = scorer.api.process_args(args)
+    essay, prompt, grade_level, score = src.scorer.api.process_args(args)
     return flask.render_template('essay.html', essay=essay, prompt=prompt,
                                  grade_level=grade_level, score=score)
 

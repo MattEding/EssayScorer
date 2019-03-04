@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-import utils.nlp
+import src.utils.nlp
 
 
 def _clean(text):
@@ -21,9 +21,9 @@ def _clean(text):
         Cleaned string.
     """
 
-    lower_proper = utils.nlp.lower_with_proper(text)
-    lemmas = utils.nlp.lemmatize(lower_proper)
-    cleaned = utils.nlp.clean_stopwords_punctuation(lemmas)
+    lower_proper = src.utils.nlp.lower_with_proper(text)
+    lemmas = src.utils.nlp.lemmatize(lower_proper)
+    cleaned = src.utils.nlp.clean_stopwords_punctuation(lemmas)
     return cleaned
 
 
@@ -40,8 +40,8 @@ def difficulty_level(text):
     difficulty_dict : dict
         Mapping with columns for each difficulty level from TextStat library.
     """
-    difficulty_levels = [func(text) for func in utils.nlp.DIFFICULTY_FUNCS]
-    difficulty_level_dict = utils.nlp.DifficultyLevel(*difficulty_levels)._asdict()
+    difficulty_levels = [func(text) for func in src.utils.nlp.DIFFICULTY_FUNCS]
+    difficulty_level_dict = src.utils.nlp.DifficultyLevel(*difficulty_levels)._asdict()
     return difficulty_level_dict
 
 
@@ -61,8 +61,8 @@ def error_ratio(original, corrected):
         Mappingf errors to the number of words in original.
     """
 
-    original = utils.nlp.blobify(original)
-    corrected = utils.nlp.blobify(corrected)
+    original = src.utils.nlp.blobify(original)
+    corrected = src.utils.nlp.blobify(corrected)
     error_ratio = sum(not word in corrected.tokenize() for word in original.tokenize()) / len(original)
     error_ratio_dict = {'error_ratio': error_ratio}
     return error_ratio_dict
@@ -82,7 +82,7 @@ def pos(text):
         Mapping with columns for each POS defined by NLTK library.
     """
 
-    pos_counter = utils.nlp.parts_of_speech(text)
+    pos_counter = src.utils.nlp.parts_of_speech(text)
     total_count = sum(pos_counter.values())
     pos_dict = {pos: count / total_count for pos, count in pos_counter.items()}
     return pos_dict
@@ -102,7 +102,7 @@ def sentiment(text):
         Mapping with columns: polarity, subjectivity.
     """
 
-    sentiment_dict = utils.nlp.blobify(text).sentiment._asdict()
+    sentiment_dict = src.utils.nlp.blobify(text).sentiment._asdict()
     return sentiment_dict
 
 
@@ -124,8 +124,8 @@ def similarity(text1, text2):
 
     clean1 = _clean(text1)
     clean2 = _clean(text2)
-    count_meas = utils.nlp.prompt_similarity(clean1, clean2, vectorizer=CountVectorizer)
-    tfidt_meas = utils.nlp.prompt_similarity(clean1, clean2, vectorizer=TfidfVectorizer)
+    count_meas = src.utils.nlp.prompt_similarity(clean1, clean2, vectorizer=CountVectorizer)
+    tfidt_meas = src.utils.nlp.prompt_similarity(clean1, clean2, vectorizer=TfidfVectorizer)
     similarity_dict = {'count': count_meas, 'tfidf': tfidt_meas}
     return similarity_dict
 
@@ -143,7 +143,7 @@ def words(text):
     similarity_dict : dict
         Mapping with columns: count, tfidf
     """
-    clean = utils.nlp.blobify(_clean(text))
+    clean = src.utils.nlp.blobify(_clean(text))
     sentence_count = len(clean.sentences)
     words = clean.tokenize()
     word_count = len(words)
@@ -170,7 +170,7 @@ def all_features(essay, prompt, grade_level):
         difficulty level, sentiment.
     """
 
-    correction = utils.nlp.correct(essay)
+    correction = src.utils.nlp.correct(essay)
 
     difficulty_level_dict = difficulty_level(correction)
     error_ratio_dict = error_ratio(essay, correction)

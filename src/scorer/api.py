@@ -4,10 +4,10 @@ import pickle
 import numpy as np
 import pandas as pd
 
-import utils.feature
+import src.utils.feature
 
-# TODO: need to redo model with error ratio -- had accidentally not used prior
-model_pkl = pathlib.Path.cwd() / 'data' / 'models' / 'rand_forest.pkl'
+
+model_pkl = pathlib.Path.cwd() / 'src' / 'scorer' / 'catboost.pkl'
 with open(model_pkl, 'rb') as fp:
     model = pickle.load(fp)
 
@@ -32,7 +32,7 @@ def process_args(args):
     score = ''
     if all(arg for arg in [essay, prompt, grade_level]):
         try:
-            features_chain_map = utils.feature.all_features(essay, prompt, grade_level)
+            features_chain_map = src.utils.feature.all_features(essay, prompt, grade_level)
             features_df = pd.DataFrame([features_chain_map])
             score = score_essay(features_df)
         except Exception:
