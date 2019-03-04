@@ -6,8 +6,8 @@ import pathlib
 import numpy as np
 import pandas as pd
 
-import utils.feature
-import utils.log
+import src.utils.feature
+import src.utils.log
 
 
 __all__ = []
@@ -30,7 +30,7 @@ essay_set_counts = dataset_df['essay_set'].value_counts()
 
 essay_set_idxs = np.array([0] + [essay_set_counts[i] for i in range(1, 9)]).cumsum()
 essay_set_ranges = tuple(range(start, stop) for start, stop in zip(essay_set_idxs, essay_set_idxs[1:]))
-clean_prompts = [utils.feature._clean(prompt) for prompt in prompts]
+clean_prompts = [src.utils.feature._clean(prompt) for prompt in prompts]
 
 
 def find_prompt(index, ranges):
@@ -43,14 +43,14 @@ def find_prompt(index, ranges):
 def prompt_similarity(i_correction):
     i, correction = i_correction
     prompt = clean_prompts[find_prompt(i, essay_set_ranges)]
-    similarity_dict = utils.feature.similarity(prompt, correction)
+    similarity_dict = src.utils.feature.similarity(prompt, correction)
     return similarity_dict
 
 
 def error_ratio(i_correction):
     i, correction = i_correction
     original = essay_originals.iloc[i]
-    error_ratio_dict = utils.feature.error_ratio(original, correction)
+    error_ratio_dict = src.utils.feature.error_ratio(original, correction)
     return error_ratio_dict
 
 
@@ -58,13 +58,13 @@ def main():
     corrections_npy = npys / f'{name}_corrections.npy'
     corrections_arr = np.load(corrections_npy)
 
-    features = [utils.feature.difficulty_level, error_ratio, utils.feature.words,
-                utils.feature.pos, utils.feature.sentiment, prompt_similarity]
+    features = [src.utils.feature.difficulty_level, error_ratio, src.utils.feature.words,
+                src.utils.feature.pos, src.utils.feature.sentiment, prompt_similarity]
     print({i: func.__name__ for i, func in enumerate(features)})
     idx = input('Choose feature function: ')
     feature = features[int(idx)]
 
-    logger = utils.log.get_logger(f'{name}_{feature.__name__}', __name__, level=logging.INFO)
+    logger = src.utils.log.get_logger(f'{name}_{feature.__name__}', __name__, level=logging.INFO)
     logger.info(f'STARTED')
 
     if (feature is prompt_similarity) or (feature is error_ratio):
