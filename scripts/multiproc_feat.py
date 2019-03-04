@@ -9,6 +9,9 @@ import utils.feature
 import utils.log
 
 
+__all__ = []
+
+
 name = input('Input data name: ').strip().lower()
 
 data = pathlib.Path.cwd() / 'data'

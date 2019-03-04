@@ -18,12 +18,7 @@ MODELING
 
 
 REFACTOR
- - remove i_XXX -> XXX
- - don't assign global arr
-    * see pos_mp.py for df version
  - df the grade level functions
- - utils.feature --> return dicts not dfs because
-                     pd.concat(dfs) slow vs pd.DataFrame(dict.union/chain_map)?
 
 
 DOCSTRINGS

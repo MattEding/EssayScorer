@@ -150,10 +150,10 @@ def all_features(essay, prompt, grade_level):
     correction = utils.nlp.correct(essay)
     grade_level_dict = {'grade_level': grade_level}
     similarity_dict = similarity(correction, prompt)
-    error_ratio_dict = error_ratio(essay, corrected)
+    error_ratio_dict = error_ratio(essay, correction)
     pos_dict = pos(correction)
     difficulty_level_dict = difficulty_level(correction)
     sentiment_dict = sentiment(correction)
-    chain_map = collections.ChainMap(grade_dict, similarity_dict, error_ratio_dict,
+    chain_map = collections.ChainMap(grade_level_dict, similarity_dict, error_ratio_dict,
                                      difficulty_level_dict, sentiment_dict, pos_dict)
     return chain_map
