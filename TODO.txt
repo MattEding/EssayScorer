@@ -1,9 +1,3 @@
-FEATURES:
- - essay word count
- - average sentence length (w/o stopwords)
- - average word length
-
-
 FLASK
  - highlight 'errors'
     * color code based on how uncertain

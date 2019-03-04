@@ -58,17 +58,14 @@ def main():
     corrections_npy = npys / f'{name}_corrections.npy'
     corrections_arr = np.load(corrections_npy)
 
-    features = [utils.feature.difficulty_level, error_ratio,
+    features = [utils.feature.difficulty_level, error_ratio, utils.feature.words,
                 utils.feature.pos, utils.feature.sentiment, prompt_similarity]
     print({i: func.__name__ for i, func in enumerate(features)})
     idx = input('Choose feature function: ')
     feature = features[int(idx)]
 
     logger = utils.log.get_logger(f'{name}_{feature.__name__}', __name__, level=logging.INFO)
-    print(logger)
     logger.info(f'STARTED')
-
-    corrections_arr = corrections_arr[:3]   # testing
 
     if (feature is prompt_similarity) or (feature is error_ratio):
         corrections_arr = enumerate(corrections_arr)
@@ -78,8 +75,7 @@ def main():
 
     feature_pkl = pkls / f'{name}_{feature.__name__}.pkl'
     feature_df = pd.DataFrame(feature_dicts)
-    # feature_df.to_pickle(feature_pkl)
-    print(feature_df)
+    feature_df.to_pickle(feature_pkl)
 
     logger.info(f'FINISHED')
 

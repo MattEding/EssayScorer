@@ -73,7 +73,7 @@ def pos(text):
 
     Parameters
     ----------
-    text : str
+    text : str, TextBlob
         Text to analyize.
 
     Returns
@@ -93,7 +93,7 @@ def sentiment(text):
 
     Parameters
     ----------
-    text : str
+    text : str, TextBlob
         Text to analyize.
 
     Returns
@@ -130,6 +130,29 @@ def similarity(text1, text2):
     return similarity_dict
 
 
+def words(text):
+    """Return dataframe of the cosine similarity between both texts.
+
+    Parameters
+    ----------
+    text : str
+        One of the texts to be compared.
+
+    Returns
+    -------
+    similarity_dict : dict
+        Mapping with columns: count, tfidf
+    """
+    clean = utils.nlp.blobify(_clean(text))
+    sentence_count = len(clean.sentences)
+    words = clean.tokenize()
+    word_count = len(words)
+    avg_len = np.mean([len(word) for word in words])
+    words_dict = {'sentence_count': sentence_count, 'word_count': word_count,
+                 'avg_len': avg_len}
+    return words_dict
+
+
 def all_features(essay, prompt, grade_level):
     """Return dataframe of all the features in this module.
 
@@ -148,12 +171,16 @@ def all_features(essay, prompt, grade_level):
     """
 
     correction = utils.nlp.correct(essay)
-    grade_level_dict = {'grade_level': grade_level}
-    similarity_dict = similarity(correction, prompt)
-    error_ratio_dict = error_ratio(essay, correction)
-    pos_dict = pos(correction)
+
     difficulty_level_dict = difficulty_level(correction)
+    error_ratio_dict = error_ratio(essay, correction)
+    grade_level_dict = {'grade_level': grade_level}
+    pos_dict = pos(correction)
     sentiment_dict = sentiment(correction)
-    chain_map = collections.ChainMap(grade_level_dict, similarity_dict, error_ratio_dict,
-                                     difficulty_level_dict, sentiment_dict, pos_dict)
+    similarity_dict = similarity(correction, prompt)
+    words_dict = words(correction)
+
+    chain_map = collections.ChainMap(difficulty_level_dict, error_ratio_dict,
+                                     grade_level_dict, pos_dict, sentiment_dict,
+                                     similarity_dict, words_dict)
     return chain_map
