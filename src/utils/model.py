@@ -1,32 +1,11 @@
 import functools
 
 import matplotlib.pyplot as plt
-import seaborn as sns
-
-from sklearn.linear_model import LinearRegression, Lasso, Ridge
-from sklearn.svm import SVR
-from sklearn.tree import DecisionTreeRegressor, ExtraTreeRegressor
-
+import seaborn # for seaborn style in matplotlib
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import cross_val_score, GridSearchCV
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.pipeline import make_pipeline, Pipeline
-
-
-sns.set_style("darkgrid")
-
-
-def cv_score(estimator, X, y, cv=5, scoring=None):
-    """Return the mean score of an estimator and classifier objects X and y using cross validation."""
-
-    scaler = StandardScaler()
-    pipeline = Pipeline([('transformer', scaler), ('estimator', estimator)])
-    cvs = cross_val_score(estimator=pipeline,
-                          X=X,
-                          y=y,
-                          cv=cv,
-                          scoring=scoring)
-    return cvs.mean()
 
 
 def cross_val_metrics(metrics, X, y):
@@ -49,33 +28,17 @@ def cross_val_metrics(metrics, X, y):
     return metric_names, cv_metrics
 
 
-def score_estimator(estimator, metrics, X, y):
-    """Return dict with name of scorer as key and the score as the value for each scorer.
-
-    Parameters
-    ----------
-    estimator : instance of BaseEstimator
-    metrics : container
-    X : features
-    y : target
-
-    Returns
-    -------
-    cross_fold_dict : dict
-        {name: cv(estimator)}
-    """
-
-    metric_names, cv_metrics = cross_val_metrics(metrics, X, y)
-    return {name: cv(estimator) for name, cv in zip(metric_names, cv_metrics)}
-
-
-def grid_search_cv(estimator, param_grid, X, y, cv=5):
-    """Return best_params_ after applying a standard scaler"""
+def cv_score(estimator, X, y, cv=5, scoring=None):
+    """Return the mean score of an estimator and classifier objects X and y using cross validation."""
 
     scaler = StandardScaler()
-    grid = make_pipeline(scaler, GridSearchCV(estimator, param_grid=param_grid, cv=cv))
-    grid.fit(X, y)
-    return grid.named_steps['gridsearchcv'].best_params_
+    pipeline = Pipeline([('transformer', scaler), ('estimator', estimator)])
+    cvs = cross_val_score(estimator=pipeline,
+                          X=X,
+                          y=y,
+                          cv=cv,
+                          scoring=scoring)
+    return cvs.mean()
 
 
 def get_hyperparameters(estimator):
@@ -100,7 +63,16 @@ def get_hyperparameters(estimator):
     return hyper_params
 
 
-def plot_residuals(fit_estimator, X, y, *, alpha=0.2, dpi=1000, save_path=None):
+def grid_search_cv(estimator, param_grid, X, y, cv=5):
+    """Return best_params_ after applying a standard scaler"""
+
+    scaler = StandardScaler()
+    grid = make_pipeline(scaler, GridSearchCV(estimator, param_grid=param_grid, cv=cv))
+    grid.fit(X, y)
+    return grid.named_steps['gridsearchcv'].best_params_
+
+
+def plot_residuals(fit_estimator, X, y, *, alpha=0.2, dpi=500, save_path=None):
     """Plot residuals with option to save to disk.
 
     Parameters
@@ -144,3 +116,23 @@ def plot_roc_calc_auc(classifier_estimator, X_train, X_test, y_train, y_test, *,
         plt.savefig(save_path, dpi=dpi)
 
     return f'AUC: {auc(false_pos, true_pos)}'
+
+
+def score_estimator(estimator, metrics, X, y):
+    """Return dict with name of scorer as key and the score as the value for each scorer.
+
+    Parameters
+    ----------
+    estimator : instance of BaseEstimator
+    metrics : container
+    X : features
+    y : target
+
+    Returns
+    -------
+    cross_fold_dict : dict
+        {name: cv(estimator)}
+    """
+
+    metric_names, cv_metrics = cross_val_metrics(metrics, X, y)
+    return {name: cv(estimator) for name, cv in zip(metric_names, cv_metrics)}

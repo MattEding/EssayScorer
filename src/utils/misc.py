@@ -1,33 +1,18 @@
+# Preprocess utils?
+
 import io
 import itertools
-import logging
 import pathlib
-import pickle
 
 import docx
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
-from scipy.spatial.distance import cosine
 
 
 data = pathlib.Path.cwd() / 'data'
 npys = data / 'npys'
 pkls = data / 'pkls'
-
-
-def get_logger(filename, module_name):
-    logs = pathlib.Path.cwd() / 'data' / 'logs'
-
-    log_file = logs / f'{filename}.log'
-    log_file.touch()
-    fmt = '{name} - {asctime} - {levelname} - Message: {message}'
-    logging.basicConfig(filename=log_file,
-                        level=logging.INFO,
-                        style='{',
-                        format=fmt)
-    logger = logging.getLogger(module_name)
-    return logger
 
 
 def public(obj):
@@ -43,7 +28,9 @@ def public(obj):
     attrs : list of strings
         List of public attributes of object
     """
-    return [attr for attr in dir(obj) if not attr.startswith('_')]
+
+    attrs = [attr for attr in dir(obj) if not attr.startswith('_')]
+    return attrs
 
 
 def stream_extract(zipfile, *file_indices):
@@ -68,7 +55,7 @@ def stream_extract(zipfile, *file_indices):
     return files
 
 
-def get_prompt(readme):
+def get_prompt(readme):                                 # Move to feature_util?
     """Return prompt of essay from a docx file.
 
     Parameters
@@ -93,6 +80,27 @@ def get_prompt(readme):
 
 
 def interpolate(df, col_min, col_max, new_min=0, new_max=100):
+    """Return map from original interval to a new interval.
+
+    Parameters
+    ----------
+    df : DataFrame
+        DataFrame to execute interpolation with.
+    col_min : str
+        Name of the column with the original minimum values.
+    col_max : str
+        Name of the column with the original maximum values.
+    new_min : int, optional
+        New minimum value in mapping.
+    new_max : int, optional
+        New maximum value in mapping.
+
+    Returns
+    -------
+    maps : list
+        List of mappings over each row of the DataFrame.
+    """
+
     maps = []
     for _, series in df.iterrows():
         old_interval = series[[col_min, col_max]]
@@ -102,11 +110,7 @@ def interpolate(df, col_min, col_max, new_min=0, new_max=100):
     return maps
 
 
-def cosine_similarity(u, v, w=None):
-    return 1 - cosine(u, v, w)
-
-
-def merge_features(name):
+def merge_features(name):                       # Defunct with new feature_util functions
     """Merge all serialized features into a single dataframe.
 
     Parameters

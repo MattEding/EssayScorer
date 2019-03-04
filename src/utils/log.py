@@ -5,7 +5,7 @@ import pathlib
 
 def get_logger(filename, name=None, **kwargs):
     """Return logger instance.
-    
+
     Parameters
     ----------
     filename : str
@@ -14,17 +14,17 @@ def get_logger(filename, name=None, **kwargs):
         Name of logger if specified, otherwise use root logger.
     **kwargs
         See logging.basicConfig
-        
+
     Returns
     -------
     logger : Logger
         Logger with specified name or root logger.
     """
-    
+
     logs = pathlib.Path.cwd() / 'data' / 'logs'
     log_file = logs / f'{filename}.log'
     log_file.touch()
-    
+
     fmt = '{name} - {asctime} - {levelname} - Message: {message}'
     logging.basicConfig(filename=log_file, style='{', format=fmt, **kwargs)
     logger = logging.getLogger(name)
@@ -36,12 +36,12 @@ def get_logger(filename, name=None, **kwargs):
 #         self.a = a
 #     def __call__(self, b): # the function formerly known as "bar"
 #         return self.a + b
-    
+
 # class log_index:
 #     def __init__(self, logger, fmt='{func} @ Index {i}'):
 #         self.logger = logger
 #         self.fmt = fmt
-        
+
 #     def __call__(self, func):
 #         ...
 
@@ -51,20 +51,20 @@ def get_logger(filename, name=None, **kwargs):
 
 def log_index(logger, fmt='{func} @ Index {i}'):
     """Decorator for enumerated function.
-    
+
     Parameters
     ----------
     logger : Logger
         Logger instance to log index of enumerated function call.
     fmt : f-string
         Log message to be formatted with function name and index of enumeration.
-        
+
     Returns
     -------
     func : function
         Decorated function. Expects enumerated inputs for function args.
     """
-    
+
     def outer(func):
         @functools.wraps(func)
         def inner(i_args):
@@ -84,15 +84,28 @@ def log_index(logger, fmt='{func} @ Index {i}'):
 
 if __name__ == '__main__':
     import multiprocessing
-    
-    logger = get_logger('TEST', __name__, filemode='w')
-    
-#     @log_index(logger)
-#     def square(x):
-#         return x**2
+    import pickle
 
-    chr = log_index(chr)
+    import dill
+
+    from utils import public
+
+
+    pickle.dump = dill.dump
+    pickle.dumps = dill.dumps
+    pickle.load = dill.load
+    pickle.loads = dill.loads
     
+
+    logger = get_logger('TEST', __name__, filemode='w')
+
+    @log_index(logger)
+    def square(x):
+        return x**2
+
+    public = log_index(public)
+    # chr = log_index(chr)
+
     with multiprocessing.Pool() as pool:
-        results = pool.map(chr, enumerate(range(33, 127)))
+        results = pool.map(public, enumerate(range(33, 127)))
         print(results)
