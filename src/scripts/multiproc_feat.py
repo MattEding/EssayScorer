@@ -10,9 +10,6 @@ import src.utils.feature
 import src.utils.log
 
 
-__all__ = []
-
-
 name = input('Input data name: ').strip().lower()
 
 data = pathlib.Path.cwd() / 'data'
@@ -30,10 +27,29 @@ essay_set_counts = dataset_df['essay_set'].value_counts()
 
 essay_set_idxs = np.array([0] + [essay_set_counts[i] for i in range(1, 9)]).cumsum()
 essay_set_ranges = tuple(range(start, stop) for start, stop in zip(essay_set_idxs, essay_set_idxs[1:]))
-clean_prompts = [src.utils.feature._clean(prompt) for prompt in prompts]
+clean_prompts = [src.utils.feature.clean(prompt) for prompt in prompts]
 
 
 def find_prompt(index, ranges):
+    """Return the index of the prompt.
+
+    Parameters
+    ----------
+    index : int
+        Index of the essay.
+    ranges : container of ranges
+        Ranges corresponding with each prompt's indices.
+
+    Returns
+    -------
+    i : int
+        Index of the range that contains the provided index.
+
+    Raises
+    ------
+    ValueError if the index is not in any of the ranges.
+    """
+
     for i, range_ in enumerate(ranges):
         if index in range_:
             return i
@@ -41,6 +57,19 @@ def find_prompt(index, ranges):
 
 
 def prompt_similarity(i_correction):
+    """Return dict of the cosine similarity between both between the corrected essay and its prompt.
+
+    Parameters
+    ----------
+    i_correction : (int, str)
+        Index and text of the correction.
+
+    Returns
+    -------
+    similarity_dict : dict
+        Mapping with columns: count, tfidf.
+    """
+
     i, correction = i_correction
     prompt = clean_prompts[find_prompt(i, essay_set_ranges)]
     similarity_dict = src.utils.feature.similarity(prompt, correction)
@@ -48,6 +77,19 @@ def prompt_similarity(i_correction):
 
 
 def error_ratio(i_correction):
+    """Return dict of error ratio of original text.
+
+    Parameters
+    ----------
+    i_correction : (int, str)
+        Index and text of the correction.
+
+    Returns
+    -------
+    error_ratio_dict : dict
+        Mapping of errors to the number of words in original.
+    """
+
     i, correction = i_correction
     original = essay_originals.iloc[i]
     error_ratio_dict = src.utils.feature.error_ratio(original, correction)
@@ -55,6 +97,11 @@ def error_ratio(i_correction):
 
 
 def main():
+    """Extract and pickle feature dataframe from a dataset--train or valid.
+    Use all cores for multiprocessing.
+    Log start and finish times.
+    """
+
     corrections_npy = npys / f'{name}_corrections.npy'
     corrections_arr = np.load(corrections_npy)
 
