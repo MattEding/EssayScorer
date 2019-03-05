@@ -3,11 +3,12 @@ import collections
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from textblob import TextBlob
 
 import src.utils.nlp
 
 
-def _clean(text):
+def clean(text):
     """Return cleaned text with stopwords removed, no punctuation, and lemmatized.
 
     Parameters
@@ -28,7 +29,7 @@ def _clean(text):
 
 
 def difficulty_level(text):
-    """Return dataframe of the various difficulty levels of the text.
+    """Return dict of the various difficulty levels of the text.
 
     Parameters
     ----------
@@ -46,34 +47,34 @@ def difficulty_level(text):
 
 
 def error_ratio(original, corrected):
-    """Return the error ratio of original text in comparison to corrected text.
+    """Return dict of error ratio of original text in comparison to corrected text.
 
     Parameters
     ----------
-    original : str, TextBlob
+    original : str
         Original essay.
-    corrected : str, TextBlob
+    corrected : str
         Corrected essay.
 
     Returns
     -------
     error_ratio_dict : dict
-        Mappingf errors to the number of words in original.
+        Mapping of errors to the number of words in original.
     """
 
-    original = src.utils.nlp.blobify(original)
-    corrected = src.utils.nlp.blobify(corrected)
+    original = TextBlob(original)
+    corrected = TextBlob(corrected)
     error_ratio = sum(not word in corrected.tokenize() for word in original.tokenize()) / len(original)
     error_ratio_dict = {'error_ratio': error_ratio}
     return error_ratio_dict
 
 
 def pos(text):
-    """Return dataframe of the ratio of each POS to length of the text.
+    """Return dict of the ratio of each POS to length of the text.
 
     Parameters
     ----------
-    text : str, TextBlob
+    text : str
         Text to analyize.
 
     Returns
@@ -89,11 +90,11 @@ def pos(text):
 
 
 def sentiment(text):
-    """Return dataframe of the sentiment of the text.
+    """Return dict of the sentiment of the text.
 
     Parameters
     ----------
-    text : str, TextBlob
+    text : str
         Text to analyize.
 
     Returns
@@ -102,12 +103,12 @@ def sentiment(text):
         Mapping with columns: polarity, subjectivity.
     """
 
-    sentiment_dict = src.utils.nlp.blobify(text).sentiment._asdict()
+    sentiment_dict = TextBlob(text).sentiment._asdict()
     return sentiment_dict
 
 
 def similarity(text1, text2):
-    """Return dataframe of the cosine similarity between both texts.
+    """Return dict of the cosine similarity between both texts.
 
     Parameters
     ----------
@@ -119,11 +120,11 @@ def similarity(text1, text2):
     Returns
     -------
     similarity_dict : dict
-        Mapping with columns: count, tfidf
+        Mapping with columns: count, tfidf.
     """
 
-    clean1 = _clean(text1)
-    clean2 = _clean(text2)
+    clean1 = clean(text1)
+    clean2 = clean(text2)
     count_meas = src.utils.nlp.prompt_similarity(clean1, clean2, vectorizer=CountVectorizer)
     tfidt_meas = src.utils.nlp.prompt_similarity(clean1, clean2, vectorizer=TfidfVectorizer)
     similarity_dict = {'count': count_meas, 'tfidf': tfidt_meas}
@@ -131,7 +132,7 @@ def similarity(text1, text2):
 
 
 def words(text):
-    """Return dataframe of the cosine similarity between both texts.
+    """Return dict of the of sentence count, word count, and avg word length.
 
     Parameters
     ----------
@@ -140,10 +141,10 @@ def words(text):
 
     Returns
     -------
-    similarity_dict : dict
-        Mapping with columns: count, tfidf
+    words_dict : dict
+        Mapping with columns: sentence_count, word_count, avg_len.
     """
-    clean = src.utils.nlp.blobify(_clean(text))
+    clean = TextBlob(clean(text))
     sentence_count = len(clean.sentences)
     words = clean.tokenize()
     word_count = len(words)
@@ -154,7 +155,7 @@ def words(text):
 
 
 def all_features(essay, prompt, grade_level):
-    """Return dataframe of all the features in this module.
+    """Return chain map of all the features in this module.
 
     Parameters
     ----------
@@ -166,8 +167,8 @@ def all_features(essay, prompt, grade_level):
     Returns
     -------
     features_chain_map : ChainMap
-        DataFrame with columns including grade level, similarity, POS,
-        difficulty level, sentiment.
+        Chain map with columns of difficulty level, error ratio, grade level,
+        pos, sentiment, similarity, and words.
     """
 
     correction = src.utils.nlp.correct(essay)

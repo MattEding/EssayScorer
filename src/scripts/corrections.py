@@ -75,6 +75,7 @@ def correct(i_essay):
 
 def correct_range(start=0, stop=None):
     """Correct all essays in the given range from start to stop.
+    Use all cores for multiprocessing.
 
     Parameters
     ----------

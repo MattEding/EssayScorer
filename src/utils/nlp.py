@@ -29,33 +29,6 @@ for pos in POS:
     _POS_COUNTER[pos] = 0
 
 
-def blobify(text):
-    """Coerce text to be a TextBlob.
-
-    Parameters
-    ----------
-    text : str, TextBlob
-        Text to be converted.
-
-    Returns
-    -------
-    textblob : TextBlob
-        TextBlob of the text.
-
-    Raises
-    ------
-    TypeError
-        If the text is not either an instance of str or TextBlob.
-    """
-
-    try:
-        text = TextBlob(text)
-    except TypeError:
-        if not isinstance(text, TextBlob):
-            raise
-    return text
-
-
 def clean_stopwords_punctuation(wordlist, punctuation=string.punctuation,
                                 stopwords=stopwords.words('english')):
     """Return cleaned text without stopwords or punctuation.
@@ -85,7 +58,7 @@ def correct(text):
 
     Parameters
     ----------
-    text : str, TextBlob
+    text : str
         Text to be corrected.
 
     Returns
@@ -94,7 +67,7 @@ def correct(text):
         Corrected text string.
     """
 
-    correction = str(blobify(text).correct()).strip()
+    correction = str(TextBlob(text).correct()).strip()
     return correction
 
 
@@ -103,7 +76,7 @@ def lemmatize(text):
 
     Parameters
     ----------
-    text : str, TextBlob
+    text : str
         Text to lemmatize.
 
     Returns
@@ -112,7 +85,7 @@ def lemmatize(text):
         List of tokenized words that have been lemmatized.
     """
 
-    text = blobify(text)
+    text = TextBlob(text)
     lemmas = text.tokenize().lemmatize()
     return lemmas
 
@@ -149,7 +122,7 @@ def parts_of_speech(text):
 
     Parameters
     ----------
-    text : str, TextBlob
+    text : str
         Text to process.
 
     Returns
@@ -158,7 +131,7 @@ def parts_of_speech(text):
         Counter of all part of speech occurances in text.
     """
 
-    text = blobify(text)
+    text = TextBlob(text)
     _, pos = zip(*text.pos_tags)
     pos_counter = _POS_COUNTER.copy()
     pos_counter.update(pos)
