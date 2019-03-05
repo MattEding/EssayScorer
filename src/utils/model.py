@@ -150,7 +150,7 @@ def plot_roc_calc_auc(classifier_estimator, X_train, X_test, y_train, y_test, *,
 
     Parameters
     ----------
-    classifier_estimator : instance of BaseEstimator
+    classifier_estimator : instance of ClassifierMixin
         A classifier estimator instance.
     X_train : array-like or sparse matrix, shape (n_samples, n_features)
         Training data.

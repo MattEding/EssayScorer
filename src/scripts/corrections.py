@@ -15,13 +15,11 @@ try:
 except Exception:
     STOP = None
 
-
 #: Directory Paths
 data = pathlib.Path.cwd() / 'data'
 pkls = data / 'pkls'
 npys = data / 'npys'
 logs = data / 'logs'
-
 
 #: Launch Logger
 log_file = logs / f'{NAME}_corrections.log'
@@ -33,12 +31,10 @@ logging.basicConfig(filename=log_file,
                     format=fmt)
 logger = logging.getLogger(__name__)
 
-
 #: Load Essay Array
 pkl = pkls / f'{NAME}.pkl'
 df = pd.read_pickle(pkl)
 essays = df['essay'][START:STOP]
-
 
 #: Load Correction Array
 npy = npys / f'{NAME}_corrections.npy'
