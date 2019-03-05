@@ -31,24 +31,6 @@ def get_logger(filename, name=None, **kwargs):
     return logger
 
 
-# class foo(object):
-#     def __init__(self, a):
-#         self.a = a
-#     def __call__(self, b): # the function formerly known as "bar"
-#         return self.a + b
-
-# class log_index:
-#     def __init__(self, logger, fmt='{func} @ Index {i}'):
-#         self.logger = logger
-#         self.fmt = fmt
-
-#     def __call__(self, func):
-#         ...
-
-# def log_index(logger, fmt='{func} @ Index {i}'):
-#     return outer
-
-
 def log_index(logger, fmt='{func} @ Index {i}'):
     """Decorator for enumerated function.
 
@@ -86,26 +68,18 @@ if __name__ == '__main__':
     import multiprocessing
     import pickle
 
-    import dill
+    # TODO: figure out how to pickle decorated log func to pass into multiprocessing pool.
 
-    from utils import public
-
-
-    pickle.dump = dill.dump
-    pickle.dumps = dill.dumps
-    pickle.load = dill.load
-    pickle.loads = dill.loads
-    
+    # import dill
+    # pickle.dump = dill.dump
+    # pickle.dumps = dill.dumps
+    # pickle.load = dill.load
+    # pickle.loads = dill.loads
 
     logger = get_logger('TEST', __name__, filemode='w')
 
-    @log_index(logger)
-    def square(x):
-        return x**2
-
-    public = log_index(public)
-    # chr = log_index(chr)
+    chr = log_index(chr)
 
     with multiprocessing.Pool() as pool:
-        results = pool.map(public, enumerate(range(33, 127)))
+        results = pool.map(chr, enumerate(range(33, 127)))
         print(results)

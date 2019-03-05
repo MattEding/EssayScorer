@@ -13,6 +13,19 @@ with open(model_pkl, 'rb') as fp:
 
 
 def score_essay(features):
+    """Score essay from features.
+
+    Parameters
+    ----------
+    features : array-like or sparse matrix
+        Features extracted from essay.
+
+    Returns
+    -------
+    score : str
+        Predicted score from 0-100%.
+    """
+
     pred = model.predict(features)
     score = np.asscalar(pred.round(1))
     if score < 0:
@@ -23,6 +36,19 @@ def score_essay(features):
 
 
 def process_args(args):
+    """Process the args from POST.
+
+    Parameters
+    ----------
+    args :  ImmutableMultiDict
+        The parsed URL parameters.
+
+    Returns
+    -------
+    (essay, prompt, grade_level, score) : (str, str, int or None, str)
+        Processed parameters.
+    """
+
     essay = args.get('essay', '')
     prompt = args.get('prompt', '')
     grade_level = args.get('grade_level')

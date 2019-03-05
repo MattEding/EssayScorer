@@ -8,6 +8,39 @@ from textblob import TextBlob
 import src.utils.nlp
 
 
+def all_features(essay, prompt, grade_level):
+    """Return chain map of all the features in this module.
+
+    Parameters
+    ----------
+    essay : str
+        Essay to analyize.
+    prompt : str
+        Prompt to be used to compare similarity with essay.
+
+    Returns
+    -------
+    features_chain_map : ChainMap
+        Chain map with columns of difficulty level, error ratio, grade level,
+        pos, sentiment, similarity, and words.
+    """
+
+    correction = src.utils.nlp.correct(essay)
+
+    difficulty_level_dict = difficulty_level(correction)
+    error_ratio_dict = error_ratio(essay, correction)
+    grade_level_dict = {'grade_level': grade_level}
+    pos_dict = pos(correction)
+    sentiment_dict = sentiment(correction)
+    similarity_dict = similarity(correction, prompt)
+    words_dict = words(correction)
+
+    chain_map = collections.ChainMap(difficulty_level_dict, error_ratio_dict,
+                                     grade_level_dict, pos_dict, sentiment_dict,
+                                     similarity_dict, words_dict)
+    return chain_map
+
+
 def clean(text):
     """Return cleaned text with stopwords removed, no punctuation, and lemmatized.
 
@@ -152,36 +185,3 @@ def words(text):
     words_dict = {'sentence_count': sentence_count, 'word_count': word_count,
                  'avg_len': avg_len}
     return words_dict
-
-
-def all_features(essay, prompt, grade_level):
-    """Return chain map of all the features in this module.
-
-    Parameters
-    ----------
-    essay : str
-        Essay to analyize.
-    prompt : str
-        Prompt to be used to compare similarity with essay.
-
-    Returns
-    -------
-    features_chain_map : ChainMap
-        Chain map with columns of difficulty level, error ratio, grade level,
-        pos, sentiment, similarity, and words.
-    """
-
-    correction = src.utils.nlp.correct(essay)
-
-    difficulty_level_dict = difficulty_level(correction)
-    error_ratio_dict = error_ratio(essay, correction)
-    grade_level_dict = {'grade_level': grade_level}
-    pos_dict = pos(correction)
-    sentiment_dict = sentiment(correction)
-    similarity_dict = similarity(correction, prompt)
-    words_dict = words(correction)
-
-    chain_map = collections.ChainMap(difficulty_level_dict, error_ratio_dict,
-                                     grade_level_dict, pos_dict, sentiment_dict,
-                                     similarity_dict, words_dict)
-    return chain_map
