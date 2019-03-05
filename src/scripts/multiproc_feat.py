@@ -10,9 +10,6 @@ import src.utils.feature
 import src.utils.log
 
 
-__all__ = []
-
-
 name = input('Input data name: ').strip().lower()
 
 data = pathlib.Path.cwd() / 'data'
@@ -100,7 +97,7 @@ def error_ratio(i_correction):
 
 
 def main():
-    """Extract and pickle feature dataframe from a dataset--train or valid. 
+    """Extract and pickle feature dataframe from a dataset--train or valid.
     Use all cores for multiprocessing.
     Log start and finish times.
     """
